@@ -300,7 +300,7 @@ function changeMode(pos) {
 		if (!eval(POS_MODE[pos_mode] + "_data")) {
 			eval(POS_MODE[pos_mode] + "()")
 		}
-		eval(POS_MODE[pos_mode] + '_timer = setInterval(POS_MODE[pos_mode] + "()", 1000 * 60)');
+		eval(POS_MODE[pos_mode] + '_timer = setInterval(POS_MODE[pos_mode] + "()", 1000 * 60 * 5)');
 		console.log(POS_MODE[pos_mode] + "_timer created")
 	}
 	for (var i = 0; i < POS_MODE.length; i++) {
