@@ -50,6 +50,7 @@ var API_HITOKOTO = "https://v1.hitokoto.cn?encode=json&charset=utf-8";
 var API_IP_INFO = "https://ipapi.co/json?languages=zh-CN";
 var API_LUNAR = "https://v2.alapi.cn/api/lunar?token=";
 var API_WEATHER = "https://devapi.qweather.com/v7/weather/now?";
+var API_WEATHER_3D = "https://devapi.qweather.com/v7/weather/3d?";
 var API_WEIBO = "https://tenapi.cn/resou/";
 var TOP_MODE = ["nonetop", "hitokoto", "poem", "weibo"];
 var BOTTOM_MODE = ["nonebtm", "weather"];
@@ -66,7 +67,7 @@ var weibo_num = 3;
 var timezoneOffset = 0;
 var cIp = "";
 var city = "";
-var cityLocation = null;
+var cityLocation = "101011000";
 var top_mode = getCookie("top_mode");
 var bottom_mode = getCookie("bottom_mode");
 var bg_mode = getCookie("bg_mode");
@@ -86,6 +87,8 @@ var weather_timer = null;
 var pic_timer = null;
 var settings_timer = null;
 var autoModeImg = "&#xe8e3";
+var tempMax="-";
+var tempMin="-";
 function createXHR() {
 	var xhr = null;
 	if (window.XMLHttpRequest) {
@@ -128,7 +131,7 @@ function getIpInfo() {
 	xhr.onreadystatechange = function() {
 		if (this.readyState == 4) {
 			var data = JSON.parse(this.responseText);
-			cityLocation = data.longitude + "," + data.latitude;
+			//cityLocation = data.longitude + "," + data.latitude;
 			cIp = data.ip;
 			city = data.region;
 			timezoneOffset = parseInt(data.utc_offset) * 0.6
@@ -139,6 +142,7 @@ function getIpInfo() {
 function clock(autoMode) {
 	var date = new Date();
 	var utc8DiffMinutes = date.getTimezoneOffset() + timezoneOffset;
+    	utc8DiffMinutes= 480;
 	date.setMinutes(date.getMinutes() + utc8DiffMinutes);
 	var MM = date.getMonth() + 1;
 	var dd = date.getDate();
@@ -203,6 +207,7 @@ function weather() {
 		document.getElementById("weaTitle").innerHTML = "请刷新后点击右上角设置按钮填写 API Key～";
 		return
 	}
+	weather3d();
 	console.log("weather update");
 	var xhr = createXHR();
 	xhr.open("GET", API_WEATHER + "key=" + KEY_QWEATHER + "&location=" + cityLocation, true);
@@ -213,7 +218,7 @@ function weather() {
 			if (data.code === "200") {
 				var img = "<i class=qi-" + wea_now.icon + "></i>";
 				var weaImg = img + "<div>天气：" + wea_now.text + "</div>";
-				var weaTemp = '<div class="tempNum">' + parseInt(wea_now.temp) + '</div><div class="symbol">&#8451;</div>' + "<div>当前气温</div>";
+				var weaTemp = '<div class="tempNum">' + parseInt(wea_now.temp) + '</div><div class="symbol">&#8451;</div>' + "<div>"+tempMin+"/"+tempMax+"</div>";
 				var weaInfo = "<div>" + city + "当前天气" + "</div>" + "<div>体感温度：" + wea_now.feelsLike + "&#8451;</div>" + "<div>湿度：" + wea_now.humidity + "%</div>" + "<div>风向：" + wea_now.windDir + "</div>" + "<div>风速：" + wea_now.windScale + "级 " + wea_now.windSpeed + "km/h</div>" + "<div>更新时间：" + wea_now.obsTime.match(/T(.+)\+/)[1] + "</div>";
 				document.getElementById("weaTitle").innerHTML = "";
 				document.getElementById("weaImg").innerHTML = weaImg;
@@ -222,6 +227,24 @@ function weather() {
 			} else {
 				console.error("天气数据获取失败");
 				document.getElementById("weaTitle").innerHTML = "数据获取失败，请检查 API Key～"
+			}
+		}
+	};
+	xhr.send(null)
+}
+function weather3d() {
+	console.log("weather3d update");
+	var xhr = createXHR();
+	xhr.open("GET", API_WEATHER_3D + "key=" + KEY_QWEATHER + "&location=" + cityLocation, true);
+	xhr.onreadystatechange = function() {
+		if (this.readyState == 4) {
+			var data = JSON.parse(this.responseText);
+			var wea_3d = data.daily;
+			if (data.code === "200") {
+				tempMax = wea_3d[0].tempMax;
+				tempMin = wea_3d[0].tempMin;
+			} else {
+				console.error("天气数据3d获取失败");
 			}
 		}
 	};
@@ -277,7 +300,7 @@ function changeMode(pos) {
 		if (!eval(POS_MODE[pos_mode] + "_data")) {
 			eval(POS_MODE[pos_mode] + "()")
 		}
-		eval(POS_MODE[pos_mode] + '_timer = setInterval(POS_MODE[pos_mode] + "()", 60 * 1000 * 60)');
+		eval(POS_MODE[pos_mode] + '_timer = setInterval(POS_MODE[pos_mode] + "()", 1000 * 60)');
 		console.log(POS_MODE[pos_mode] + "_timer created")
 	}
 	for (var i = 0; i < POS_MODE.length; i++) {
