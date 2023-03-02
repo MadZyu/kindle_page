@@ -1,7 +1,9 @@
 window.onload = function() {
 	getIpInfo();
+	weather3d();
 	clock(bg_autoMode);
 	time_timer = setInterval("clock(" + bg_autoMode + ")", 60 * 1000);
+	weather3d_timer = setInterval("weather3d()", 60 * 1000 * 60)
 	if (rotation_mode !== "") {
 		rotation_mode = Number(rotation_mode)
 	} else {
@@ -83,6 +85,7 @@ var hitokoto_timer = null;
 var poem_timer = null;
 var weibo_timer = null;
 var time_timer = null;
+var weather3d_timer = null;
 var weather_timer = null;
 var pic_timer = null;
 var settings_timer = null;
@@ -207,7 +210,6 @@ function weather() {
 		document.getElementById("weaTitle").innerHTML = "请刷新后点击右上角设置按钮填写 API Key～";
 		return
 	}
-	weather3d();
 	console.log("weather update");
 	var xhr = createXHR();
 	xhr.open("GET", API_WEATHER + "key=" + KEY_QWEATHER + "&location=" + cityLocation, true);
