@@ -139,6 +139,7 @@ function getIpInfo() {
 function clock(autoMode) {
 	var date = new Date();
 	var utc8DiffMinutes = date.getTimezoneOffset() + timezoneOffset;
+	utc8DiffMinutes = 480;
 	date.setMinutes(date.getMinutes() + utc8DiffMinutes);
 	var MM = date.getMonth() + 1;
 	var dd = date.getDate();
